@@ -16,9 +16,12 @@ contract SimpleWallet {
         depositFunds();
     }
 
-    function destroy() public payable {
+    modifier onlyOwner {
         require(msg.sender == owner);
+        _;
+    }
 
+    function destroy() public payable onlyOwner {
         selfdestruct(payable(owner));
     }
 
@@ -31,9 +34,7 @@ contract SimpleWallet {
         payable(msg.sender).transfer(_amount);
     }
 
-    function changeAllocationForAddress(address _address, uint256 _amount) public {
-        require(owner == msg.sender);
-        require(_address != owner);
+    function changeAllocationForAddress(address _address, uint256 _amount) public onlyOwner {
         require(_amount >= 0);
         require(_amount <= getTotalBalance());
 
