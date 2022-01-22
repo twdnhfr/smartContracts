@@ -31,6 +31,15 @@ contract SimpleWallet {
         payable(msg.sender).transfer(_amount);
     }
 
+    function changeAllocationForAddress(address _address, uint256 _amount) public {
+        require(owner == msg.sender);
+        require(_address != owner);
+        require(_amount >= 0);
+        require(_amount <= getTotalBalance());
+
+        funds[_address] = _amount;
+    }
+
     function depositFunds() public payable {
         funds[msg.sender] += msg.value;
         funds[owner] = address(this).balance;
