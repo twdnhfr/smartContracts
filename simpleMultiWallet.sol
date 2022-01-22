@@ -2,27 +2,17 @@
 
 pragma solidity 0.8.11;
 
-contract SimpleWallet {
-    
-    address public owner;
+import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/access/Ownable.sol";
 
+contract SimpleWallet is Ownable {
     mapping(address => uint256) funds; 
-
-    constructor() {
-        owner = msg.sender;
-    }
 
     receive() external payable {
         depositFunds();
     }
 
-    modifier onlyOwner {
-        require(msg.sender == owner);
-        _;
-    }
-
     function destroy() public payable onlyOwner {
-        selfdestruct(payable(owner));
+        selfdestruct(payable(owner()));
     }
 
     function withdrawFunds(uint256 _amount) public payable {
@@ -43,7 +33,7 @@ contract SimpleWallet {
 
     function depositFunds() public payable {
         funds[msg.sender] += msg.value;
-        funds[owner] = address(this).balance;
+        funds[owner()] = address(this).balance;
     }
 
     function getTotalBalance() public view returns (uint256) {
