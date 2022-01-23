@@ -3,8 +3,11 @@
 pragma solidity 0.8.11;
 
 import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/access/Ownable.sol";
+import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/utils/math/SafeMath.sol";
 
 contract SimpleWallet is Ownable {
+    using SafeMath for uint;
+
     mapping(address => uint256) funds; 
 
     receive() external payable {
@@ -19,7 +22,7 @@ contract SimpleWallet is Ownable {
         require(_amount <= address(this).balance, "Not enough in wallet");
         require(_amount <= funds[msg.sender], "Not enough allocated for you");
 
-        funds[msg.sender] -= _amount;
+        funds[msg.sender] = funds[msg.sender].sub(_amount);
 
         payable(msg.sender).transfer(_amount);
     }
@@ -32,7 +35,7 @@ contract SimpleWallet is Ownable {
     }
 
     function depositFunds() public payable {
-        funds[msg.sender] += msg.value;
+        funds[msg.sender] = funds[msg.sender].add(msg.value);
         funds[owner()] = address(this).balance;
     }
 
